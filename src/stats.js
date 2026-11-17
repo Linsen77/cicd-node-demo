@@ -49,3 +49,6 @@ export function level(score) {
   if (score >= 60) return 'C';
   return 'D';
 }
+
+// 故障演练 A：故意定义未使用变量，让 Lint 失败
+const unused = 1;
