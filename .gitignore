@@ -1,0 +1,15 @@
+# 依赖目录必须忽略，否则 node_modules 会被提交，npm ci 与锁文件都会失真
+node_modules/
+
+# 构建产物由 CI 重新生成并作为 artifact 上传，不入库
+dist/
+
+# 日志与系统文件
+*.log
+.DS_Store
+Thumbs.db
+
+# 本地环境变量：绝对不能提交
+.env
+.env.*
+!.env.example

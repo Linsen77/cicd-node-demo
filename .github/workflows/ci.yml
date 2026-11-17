@@ -1,0 +1,63 @@
+# 实验二 6.2：Node.js 最小 CI（代码规范 → 单元测试 → 构建打包）
+# 任一环节失败，后续步骤不会执行，整次运行变红——这就是“门禁”的含义。
+# 前置：仓库必须提交 package-lock.json，且与 package.json 一致，否则 npm ci 会直接失败。
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# 只读权限：CI 只需要读代码，不需要写仓库
+permissions:
+  contents: read
+
+# 同一分支的新提交会取消上一次还在排队的运行，省额度也省时间
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          # 与本机 Node 22.22.2 对齐，避免“本地能跑、CI 报错”
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Show versions
+        run: |
+          node -v
+          npm -v
+
+      # 按锁文件安装，比 npm install 更适合 CI：结果可复现，不会偷偷升级依赖
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # 报告模板写的是 npm test -- --ci，那是 Jest 的参数；
+      # 本项目用 Node 内置测试器，所以直接 npm test。换成 Jest/Vitest 时再补 --ci。
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # 把构建产物传上去，方便事后核对“这次发布的是哪份文件”
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-node-demo
+          path: dist/
+          retention-days: 7

@@ -1,0 +1,24 @@
+# 实验二 6.1：最小工作流，只证明“触发 → 执行 → 能看日志”这条链路是通的
+# 注意：这里没有 checkout，所以 ls -l 看到的是空的工作目录，不是仓库文件。
+#       想看到仓库文件，必须先 actions/checkout（见 ci.yml）。
+
+name: Hello World CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Say hello
+        run: echo "Hello World!"
+
+      - name: Show current time
+        run: date
+
+      - name: List files
+        run: ls -l
