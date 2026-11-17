@@ -27,7 +27,7 @@ export function sum(list) {
 export function average(list) {
   assertNumbers(list);
   const value = sum(list) / list.length;
-  return Math.round(value * 100) / 100;
+  return value; // 故障演练 B：去掉四舍五入，让 average 的断言失败
 }
 
 /** 最大值 */
@@ -49,6 +49,3 @@ export function level(score) {
   if (score >= 60) return 'C';
   return 'D';
 }
-
-// 故障演练 A：故意定义未使用变量，让 Lint 失败
-const unused = 1;
