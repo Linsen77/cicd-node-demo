@@ -27,7 +27,7 @@ export function sum(list) {
 export function average(list) {
   assertNumbers(list);
   const value = sum(list) / list.length;
-  return value; // 故障演练 B：去掉四舍五入，让 average 的断言失败
+  return Math.round(value * 100) / 100;
 }
 
 /** 最大值 */
